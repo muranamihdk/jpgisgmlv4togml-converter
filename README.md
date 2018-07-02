@@ -1,7 +1,7 @@
 jpgisgmlv4togml-converter
 =========================
 
-国土地理院 基盤地図情報基本項目 JPGIS(GML) V4.0形式のデータを、GMLに変換するコンバータです。
+国土地理院 基盤地図情報基本項目 JPGIS(GML) V4.1形式のデータを、GMLに変換するコンバータです。
 
 基盤地図情報：[http://www.gsi.go.jp/kiban/](http://www.gsi.go.jp/kiban/)
 
