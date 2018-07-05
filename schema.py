@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
-from lxml import etree
 from copy import copy
+from lxml import etree
+
 SCHEMA_SPACE = {
     "fgd:": "{http://fgd.gsi.go.jp/spec/2008/FGD_GMLSchema}",
     "gml:": "{http://www.opengis.net/gml/3.2}",
@@ -9,7 +9,7 @@ SCHEMA_SPACE = {
 }
 
 
-class schema:
+class Schema:
     def __init__(self, schemafile):
         self.root = etree.parse(schemafile)
 

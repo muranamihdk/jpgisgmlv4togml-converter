@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # based on a script from http://wiki.openstreetmap.org/wiki/Converting_OSM_to_GML
 # modified to work with JPGIS(GML) V4.0 XSD by yoshida
 import os
@@ -9,10 +8,10 @@ from xml.sax.handler import ContentHandler
 from xml.etree.cElementTree import Element, SubElement, ElementTree
 from itertools import islice
 from collections import deque
-from fgdschema import fgdschema
+from fgdschema import FgdSchema
 
 
-class fgd2gml(ContentHandler):
+class Fgd2Gml(ContentHandler):
     def __init__(self, fh, xsdfile):
         ContentHandler.__init__(self)
         self.fh = fh
@@ -20,12 +19,12 @@ class fgd2gml(ContentHandler):
 
     def getFGDTags(self):
         with open(self.xsdfile) as f:
-            schema = fgdschema(f)
+            schema = FgdSchema(f)
             return schema.get_fgd_element_names()
 
     def getFGDNodeElements(self, name):
         with open(self.xsdfile) as f:
-            schema = fgdschema(f)
+            schema = FgdSchema(f)
             self.nodeelements = schema.get_fgd_elements(name)
 
     def getFGDNodeElement(self, name):
@@ -176,7 +175,7 @@ class fgd2gml(ContentHandler):
 
 if __name__ == "__main__":
     xsdfile = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'FGD_GMLSchema.xsd')
-    fgdParser = fgd2gml(sys.stdout, xsdfile)
+    fgdParser = Fgd2Gml(sys.stdout, xsdfile)
     print('<?xml version="1.0" encoding="utf-8" ?>')
     print('<ogr:FeatureCollection')
     print('     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')

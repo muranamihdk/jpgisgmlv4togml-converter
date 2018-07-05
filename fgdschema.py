@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
 import os
-from lxml import etree
 from copy import copy
-from schema import schema
+from lxml import etree
+from schema import Schema
 
 
-class fgdschema(schema):
+class FgdSchema(Schema):
     def __init__(self, schemafile):
-        schema.__init__(self, schemafile)
+        Schema.__init__(self, schemafile)
 
     def get_fgd_element_names(self):
         names = []
