@@ -70,15 +70,15 @@ if __name__ == '__main__':
     with open(xsdfile) as f:
         schema = FgdSchema(f)
 
-    elementnames = schema.get_fgd_element_names()
-    print(elementnames)
+    element_names = schema.get_fgd_element_names()
+    print(element_names)
 
     print(schema.get_fgd_element_attributes("WStrL"))
     print(schema.get_fgd_element("WStrL", "loc"))
     print(schema.get_fgd_elements("WStrL"))
 
     # print all types.
-    for e in elementnames:
+    for e in element_names:
         elements = schema.get_fgd_elements(e)
         for i in elements:
             print(i['type'])
