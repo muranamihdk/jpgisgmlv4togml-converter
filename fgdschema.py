@@ -6,7 +6,7 @@ from schema import Schema
 
 class FgdSchema(Schema):
     def __init__(self, schemafile):
-        Schema.__init__(self, schemafile)
+        super().__init__(schemafile)
 
     def get_fgd_element_names(self):
         names = []
