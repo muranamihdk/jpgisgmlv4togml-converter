@@ -68,8 +68,7 @@ class FgdSchema(Schema):
 if __name__ == '__main__':
     xsdfile = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'FGD_GMLSchema.xsd')
     with open(xsdfile) as f:
-
-        schema = fgdschema(f)
+        schema = FgdSchema(f)
 
     elementnames = schema.get_fgd_element_names()
     print(elementnames)
@@ -82,4 +81,4 @@ if __name__ == '__main__':
     for e in elementnames:
         elements = schema.get_fgd_elements(e)
         for i in elements:
-            print(i['type'].encode('utf_8'))
+            print(i['type'])
