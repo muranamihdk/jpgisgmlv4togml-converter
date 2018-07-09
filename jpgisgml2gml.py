@@ -13,7 +13,7 @@ from fgdschema import FgdSchema
 
 class Fgd2Gml(ContentHandler):
     def __init__(self, fh, xsdfile):
-        ContentHandler.__init__(self)
+        super().__init__()
         self.fh = fh
         self.xsdfile = xsdfile
 
@@ -25,10 +25,10 @@ class Fgd2Gml(ContentHandler):
     def getFGDNodeElements(self, name):
         with open(self.xsdfile) as f:
             schema = FgdSchema(f)
-            self.nodeelements = schema.get_fgd_elements(name)
+            self.node_elements = schema.get_fgd_elements(name)
 
     def getFGDNodeElement(self, name):
-        for element in self.nodeelements:
+        for element in self.node_elements:
             if element['name'] == name:
                 return element
         return None
@@ -46,10 +46,10 @@ class Fgd2Gml(ContentHandler):
         return False
 
     def isFGDNodeName(self, name):
-        if self.featuretag is None:
+        if self.feature_tag is None:
             return False
-        if self.nodeelements is None:
-            self.getFGDNodeElements(self.featuretag)
+        if self.node_elements is None:
+            self.getFGDNodeElements(self.feature_tag)
 
         # matched FGD node member name. (case of WStrL element, 'loc', 'type', 'name', etc...)
         node = self.getFGDNodeElement(name)
@@ -60,24 +60,24 @@ class Fgd2Gml(ContentHandler):
 
     def startDocument(self):
         self.tags = self.getFGDTags()
-        self.nodeelements = None
-        self.featuretag = None    # ex) 'WStrL', 'Cstline', etc...
-        self.featureid = None
+        self.node_elements = None
+        self.feature_tag = None    # ex) 'WStrL', 'Cstline', etc...
+        self.feature_id = None
 
-        self.currentstack = []
+        self.current_stack = []
         self.current = None
 
         self.nodes = []
 
     def characters(self, data):
         if self.current is not None:
-            self.currentstack[-1]['text'] += data
+            self.current_stack[-1]['text'] += data
 
     def startElement(self, name, attr):
         if self.isFGDTag(name):
             # find new FGD tag.
-            self.featuretag = name
-            self.featureid = attr["gml:id"]
+            self.feature_tag = name
+            self.feature_id = attr["gml:id"]
         elif self.isFGDNodeName(name):
             # find new FGD node tag.
             type = self.getFGDNodeElementType(name)
@@ -88,7 +88,7 @@ class Fgd2Gml(ContentHandler):
                 'text': "",
                 'node': []
             }
-            self.currentstack.append(self.current)
+            self.current_stack.append(self.current)
             #print "S:", name, self.getFGDNodeElement(name)["type"]
 
         elif self.current is not None and self.current['isgml']:
@@ -98,27 +98,27 @@ class Fgd2Gml(ContentHandler):
                 'text': "",
                 'node': []
             }
-            self.currentstack[-1]['node'].append(newNode)
-            self.currentstack.append(newNode)
+            self.current_stack[-1]['node'].append(newNode)
+            self.current_stack.append(newNode)
 
     def endElement(self, name):
         if self.current is not None and self.current['name'] == name:
             # find end FGD node tag.
             self.nodes.append(self.current)
-            self.currentstack = []
+            self.current_stack = []
             self.current = None
             #print "E:", name
 
         elif self.current is not None and self.current['isgml']:
             # find end tag, in FGD node.
-            self.currentstack.pop()
+            self.current_stack.pop()
 
-        if name in self.tags and self.featuretag == name:
+        if name in self.tags and self.feature_tag == name:
             # find end FGD tag.
             self.generateFeature()
 
-            self.featureid = None
-            self.currentstack = []
+            self.feature_id = None
+            self.current_stack = []
             self.current = None
             self.nodes = []
 
@@ -136,14 +136,14 @@ class Fgd2Gml(ContentHandler):
 
     def generateFeature(self):
         featureMember = Element('gml:featureMember')
-        feature = SubElement(featureMember, 'ogr:' + self.featuretag)
+        feature = SubElement(featureMember, 'ogr:' + self.feature_tag)
         # set the fid.
         for node in self.nodes:
             if node['name'] == 'fid':
                 feature.attrib['fid'] = node['text'].strip()
 
         # generate the id node.
-        SubElement(feature, "ogr:id").text = self.featureid
+        SubElement(feature, "ogr:id").text = self.feature_id
 
         # generate the child nodes.
         for node in self.nodes:
@@ -176,6 +176,7 @@ class Fgd2Gml(ContentHandler):
 if __name__ == "__main__":
     xsdfile = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'FGD_GMLSchema.xsd')
     fgdParser = Fgd2Gml(sys.stdout, xsdfile)
+
     print('<?xml version="1.0" encoding="utf-8" ?>')
     print('<ogr:FeatureCollection')
     print('     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')
