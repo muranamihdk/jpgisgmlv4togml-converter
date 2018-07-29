@@ -1,21 +1,16 @@
 from copy import copy
 from lxml import etree
 
-SCHEMA_SPACE = {
-    "fgd:": "{http://fgd.gsi.go.jp/spec/2008/FGD_GMLSchema}",
-    "gml:": "{http://www.opengis.net/gml/3.2}",
-    "xlink:": "{http://www.w3.org/1999/xlink}",
-    "xs:": "{http://www.w3.org/2001/XMLSchema}"
-}
-
 
 class Schema:
     def __init__(self, schemafile):
         self.root = etree.parse(schemafile)
+        self.schema_space = self.root.getroot().nsmap
 
     def replace_ns(self, path):
-        for k, v in SCHEMA_SPACE.items():
-            path = path.replace(k, v)
+        for ns_prefix, ns_uri in self.schema_space.items():
+            if ns_prefix:
+                path = path.replace(f"{ns_prefix}:", f"{{{ns_uri}}}")
         return path
 
     def findall(self, path):
