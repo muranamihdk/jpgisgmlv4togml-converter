@@ -1,5 +1,4 @@
 import os
-from copy import copy
 from lxml import etree
 from schema import Schema
 
